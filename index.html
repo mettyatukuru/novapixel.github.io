@@ -1,0 +1,122 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arcane Tree | 魔法都市育成ゲーム</title>
+  <style>
+    body {
+      background: #101827;
+      color: white;
+      font-family: sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 40px 15px;
+    }
+
+    h1 {
+      color: #c5a8ff;
+    }
+
+    #mana {
+      font-size: 32px;
+      color: #8de9ff;
+      font-weight: bold;
+    }
+
+    #tree {
+      font-size: 120px;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s;
+      display: inline-block;
+      margin: 20px;
+    }
+
+    #tree:active {
+      transform: scale(0.9);
+    }
+
+    button {
+      background: #7252b5;
+      color: white;
+      border: none;
+      padding: 15px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <h1>Arcane Tree</h1>
+  <p>魔法の大樹を育て、都市を発展させよう！</p>
+
+  <p>現在のマナ</p>
+  <div id="mana">0</div>
+
+  <div id="tree" role="button" tabindex="0"
+       aria-label="魔法の大樹">🌳</div>
+
+  <p>大樹をクリックしてマナを集めよう！</p>
+
+  <h2>施設建設</h2>
+  <button id="buy">魔力の苗木を建設（15マナ）</button>
+
+  <p>苗木の数：<span id="count">0</span></p>
+  <p>自動生産：<span id="rate">0</span> マナ/秒</p>
+
+  <script>
+    let mana = 0;
+    let seedlings = 0;
+
+    const manaEl = document.getElementById("mana");
+    const countEl = document.getElementById("count");
+    const rateEl = document.getElementById("rate");
+    const buyButton = document.getElementById("buy");
+    const tree = document.getElementById("tree");
+
+    function update() {
+      manaEl.textContent = Math.floor(mana);
+      countEl.textContent = seedlings;
+      rateEl.textContent = (seedlings * 0.2).toFixed(1);
+      buyButton.disabled = mana < 15;
+    }
+
+    function clickTree() {
+      mana += 1;
+      update();
+    }
+
+    tree.addEventListener("click", clickTree);
+    tree.addEventListener("keydown", function(event) {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        clickTree();
+      }
+    });
+
+    buyButton.addEventListener("click", function() {
+      if (mana >= 15) {
+        mana -= 15;
+        seedlings++;
+        update();
+      }
+    });
+
+    setInterval(function() {
+      mana += seedlings * 0.2 / 10;
+      update();
+    }, 100);
+
+    update();
+  </script>
+</body>
+</html>
+  
