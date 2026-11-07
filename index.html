@@ -1,122 +1,115 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="キャラシナはNPCの行動予定とシナリオ分岐を整理し、矛盾を見つける無料の創作支援ツールです。"><title>キャラシナ | めっちゃつくーる</title><style>
+:root{font-family:system-ui,-apple-system,'Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;color:#273047;background:#f6f7fc}*{box-sizing:border-box}body{margin:0}header{background:#202746;color:#fff;padding:23px max(20px,calc((100% - 1080px)/2))}header small{color:#bec9e8}h1{margin:4px 0;font-size:2rem}h2{margin:0 0 14px}p{line-height:1.7}main{max-width:1080px;margin:auto;padding:25px 18px 60px}.tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}button,.filebtn{font:inherit;cursor:pointer;border:0;border-radius:10px;padding:10px 14px;background:#e5e9f6;color:#243251}button:hover,.filebtn:hover{filter:brightness(.96)}button.primary,.tabs button.active{background:#514bc8;color:white}button.danger{background:#fff0f0;color:#a42336}.card{background:white;border:1px solid #e0e5f0;border-radius:16px;padding:20px;margin:14px 0;box-shadow:0 4px 20px #18234308}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.wide{grid-column:1/-1}label{display:block;font-size:.91rem;font-weight:650;margin-bottom:4px}input,select,textarea{width:100%;font:inherit;padding:10px;border:1px solid #cdd5e5;border-radius:9px;background:#fff}textarea{min-height:72px;resize:vertical}input:focus,select:focus,textarea:focus{outline:2px solid #938eff}.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}.muted{color:#64708b;font-size:.9rem}.notice{border-radius:10px;padding:12px;margin:8px 0;background:#f0f4ff}.warn{background:#fff2dc;color:#704514}.good{background:#e7f7ee;color:#185c39}.item{border:1px solid #e0e5ef;border-radius:11px;padding:13px;margin:9px 0}.itemhead{display:flex;justify-content:space-between;gap:8px;align-items:center}.item p{margin:5px 0;white-space:pre-wrap;overflow-wrap:anywhere}.tag{display:inline-block;background:#eeeafd;padding:3px 8px;border-radius:20px;font-size:.78rem}.links{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.arrow{color:#625ec9}.hidden{display:none!important}footer{text-align:center;color:#7b8499;padding:24px}.badge{background:#dbe4ff;color:#3c4480;border-radius:20px;padding:3px 9px;font-size:.8rem}@media(max-width:650px){.grid{grid-template-columns:1fr}.wide{grid-column:auto}header{padding:20px}h1{font-size:1.65rem}}
+ 
+.editing{border-color:#7770d9;box-shadow:0 0 0 2px #dedaff}.timeline-scroll{overflow-x:auto;padding-bottom:12px}.timeline-track{position:relative;min-width:780px;height:70px;background:repeating-linear-gradient(to right,#f5f6fb 0,#f5f6fb calc(100% / 24 - 1px),#dfe3ef calc(100% / 24 - 1px),#dfe3ef calc(100% / 24));border-radius:10px;margin-top:22px}.timebar{position:absolute;height:25px;border-radius:7px;background:#625bd0;color:white;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:4px 6px;cursor:pointer}.timebar.problem{background:#b84a44}.timemark{position:absolute;top:0;height:100%;border-left:2px dashed #da9342;pointer-events:none}.time-labels{display:flex;justify-content:space-between;min-width:780px;font-size:12px;color:#69758a}.timeline-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:13px}.timeline-legend span{display:inline-flex;gap:5px;align-items:center}.dot{width:11px;height:11px;border-radius:3px;display:inline-block;background:#625bd0}.dot.red{background:#b84a44}.dot.orange{background:#da9342}.branch-card{padding:9px 12px;background:#f3f0ff;border-left:4px solid #625bd0;margin:8px 0;border-radius:6px;overflow-wrap:anywhere}.branch-card.problem{border-color:#b84a44;background:#fff1ec}.smallnote{font-size:13px;color:#69758a}.place-entry{display:flex;gap:8px;flex-wrap:wrap}.place-entry input{flex:1;min-width:180px}.place-pill{display:inline-flex;align-items:center;gap:8px;background:#edf0fa;border-radius:10px;padding:5px 8px;margin:4px}.place-pill button{padding:4px 7px}.place-manager{background:#fafaff}
+</style></head><body><header><small>めっちゃつくーる · mettyatukuru</small><h1>キャラシナ <span class="badge">β4</span></h1><div>キャラクターの動き、物語の道筋、世界観のルールを、ひとつに。</div></header><main><p>TRPG・小説・ゲーム制作向け。アカウント不要、入力内容はこのブラウザに保存されます。公開サーバーへ送信しません。</p><nav class="tabs" aria-label="機能切り替え"><button id="tab-schedule" class="active" type="button">NPC行動・予定表</button><button id="tab-story" type="button">シナリオ分岐・矛盾チェック</button><button id="tab-rules" type="button">設定ルール確認</button><button id="tab-data" type="button">保存・読み込み</button></nav>
+<section id="view-schedule"><div class="card"><h2>NPCの行動を登録</h2><form id="schedule-form"><div class="grid"><div><label for="npc">キャラクター名</label><input id="npc" maxlength="80" required placeholder="例：探偵アキラ"></div><div><label for="place">場所</label><select id="place" required></select></div><div><label for="schedule-date">日付</label><input id="schedule-date" type="date" required></div><div><label for="start">開始時刻</label><input id="start" type="time" value="13:00" required></div><div><label for="end">終了時刻</label><input id="end" type="time" value="14:00" required></div><div class="wide"><label for="action">行動・メモ</label><textarea id="action" maxlength="500" placeholder="例：重要な資料を探す"></textarea></div></div><div class="actions"><button class="primary" type="submit">予定を追加</button></div></form></div><div class="card"><h2>予定一覧</h2><p class="muted">同じキャラクターの時間帯が重なると警告します。日付をまたぐ予定には未対応です。</p><div class="grid"><div><label for="list-date">日付で絞り込み</label><select id="list-date"></select></div><div><label for="list-place">場所で絞り込み</label><select id="list-place"></select></div></div><div id="schedule-warnings" aria-live="polite"></div><div id="schedule-list"></div></div></section>
+<section id="view-story" class="hidden"><div class="card"><h2>シーンを登録</h2><p class="muted">シーンを作り、次に進めるシーンをつなぎます。最初のシーンは「開始」に指定してください。</p><form id="scene-form"><div class="grid"><div><label for="scene-name">シーン名</label><input id="scene-name" maxlength="100" required placeholder="例：古い屋敷を訪れる"></div><div><label for="scene-date">日付（任意）</label><input id="scene-date" type="date"></div><div><label for="scene-place">場所（任意）</label><input id="scene-place" list="known-places" maxlength="100"></div><div><label for="scene-clue">このシーンで得る情報（任意）</label><input id="scene-clue" maxlength="100" placeholder="例：銀の鍵"></div><div class="wide"><label for="scene-req">進行に必要な情報（任意）</label><input id="scene-req" maxlength="100" placeholder="例：銀の鍵"></div><div class="wide"><label for="scene-memo">説明</label><textarea id="scene-memo" maxlength="500"></textarea></div></div><div class="actions"><button class="primary" type="submit">シーンを追加</button></div></form></div><div class="card"><h2>シーンを接続</h2><div class="grid"><div><label for="edge-from">移動元</label><select id="edge-from"></select></div><div><label for="edge-to">移動先</label><select id="edge-to"></select></div></div><div class="actions"><button id="add-edge" class="primary" type="button">分岐を追加</button></div></div><div class="card"><h2>分岐の一覧とチェック</h2><p class="muted">開始シーンから到達できない場所、行き止まり、必要な情報を得ずに進める経路を検出します。行き止まりは結末なら問題ありません。</p><div id="story-warnings" aria-live="polite"></div><div id="scene-list"></div></div></section>
+<section id="view-rules" class="hidden">
+<div class="card"><h2>キャラクター設定</h2><p class="muted">キャラクターの年齢・属性を登録します。NPC予定表の名前と完全一致すると自動で関連付けます。</p>
+<form id="character-form"><div class="grid"><div><label for="character-name">名前</label><input id="character-name" maxlength="80" required placeholder="例：リオ"></div><div><label for="character-age">年齢</label><input id="character-age" type="number" min="0" max="999" value="16" required></div><div><label for="character-element">属性</label><input id="character-element" maxlength="60" placeholder="例：水"></div><div><label for="character-note">メモ</label><input id="character-note" maxlength="200" placeholder="例：王国の魔術師"></div></div><div class="actions"><button class="primary" type="submit">キャラクターを追加</button></div></form><div id="character-list"></div></div>
+<div class="card"><h2>世界観のルール</h2><p class="muted">自由文をAIが理解する方式ではありません。条件を選んで登録すると、機械的に判定します。</p>
+<form id="rule-form"><div class="grid"><div><label for="rule-title">ルール名</label><input id="rule-title" maxlength="100" required placeholder="例：魔法の年齢制限"></div><div><label for="rule-type">ルールの種類</label><select id="rule-type"><option value="age">行動に必要な最低年齢</option><option value="element">属性による行動禁止</option><option value="place">指定時間帯の場所への立ち入り禁止</option></select></div><div><label for="rule-action">対象の行動（場所制限では不要）</label><input id="rule-action" maxlength="80" placeholder="例：魔法を使う"></div><div><label for="rule-value">最低年齢 / 禁止属性 / 禁止場所</label><input id="rule-value" maxlength="100" required placeholder="例：18"></div><div><label for="rule-start">禁止時間の開始（場所制限用）</label><input id="rule-start" type="time" value="20:00"></div><div><label for="rule-end">禁止時間の終了（場所制限用）</label><input id="rule-end" type="time" value="06:00"></div></div><div class="actions"><button class="primary" type="submit">ルールを追加</button></div></form><div id="rule-list"></div></div>
+<div class="card"><h2>イベントの設定確認</h2><p class="muted">キャラクターが何をするか入力すると、登録済みルールに照らして警告します。例外はイベントごとに設定できます。</p>
+<form id="event-form"><div class="grid"><div><label for="event-character">キャラクター</label><select id="event-character" required></select></div><div><label for="event-action">行動</label><input id="event-action" maxlength="80" required placeholder="例：魔法を使う"></div><div><label for="event-place">場所（任意）</label><input id="event-place" list="known-places" maxlength="100" placeholder="例：王城"><datalist id="known-places"></datalist></div><div><label for="event-date">日付</label><input id="event-date" type="date"></div><div><label for="event-time">時刻（任意）</label><input id="event-time" type="time"></div><div class="wide"><label><input id="event-exception" type="checkbox" style="width:auto"> このイベントは例外として許可する</label></div></div><div class="actions"><button class="primary" type="submit">イベントを追加</button></div></form><div id="rule-warnings" aria-live="polite"></div><div id="event-list"></div></div>
+</section><section id="view-data" class="hidden"><div class="card"><h2>作品データの管理</h2><p>入力したデータはこの端末のブラウザ内に保存されます。ブラウザのデータ削除や端末変更に備え、JSON形式でバックアップしてください。</p><div class="actions"><button id="export" class="primary" type="button">JSONを保存</button><label class="filebtn" for="import" style="margin:0">JSONを読み込む</label><input id="import" type="file" accept=".json,application/json" style="display:none"><button id="reset" class="danger" type="button">すべて削除</button></div><div id="data-status" class="notice" aria-live="polite">読み込みは現在のデータを置き換えます。</div></div><div class="card"><h2>このツールについて</h2><p>キャラシナは独自に作成したHTML・CSS・JavaScriptだけで動作します。外部ライブラリ、外部フォント、画像素材、CDNは使用していません。</p><p class="muted">設定ルール確認は、入力した条件の一致・数値・時刻を判定します。自由文の意味理解やルール同士の一般的な論理矛盾の検出には対応していません。矛盾検出は補助機能です。物語のすべての論理矛盾や設定の食い違いを自動判定できるわけではありません。</p></div></section>
+<section class="card" id="timeline-panel"><h2>時間軸・分岐マップ</h2><p class="muted">NPCの予定と時刻付きイベントを24時間軸に表示します。赤は時間重複・ルール違反候補、橙の点線はイベントです。バーを押すと予定を編集できます。下段の分岐は時間順ではなく、シーンの登録順です。</p><div class="timeline-legend"><span><i class="dot"></i>予定</span><span><i class="dot red"></i>問題候補</span><span><i class="dot orange"></i>イベント</span></div><div class="card place-manager"><h3>場所を追加する</h3><form id="place-form" class="place-entry"><input id="new-place" maxlength="100" required placeholder="例：王城、図書館、港"><button class="primary" type="submit">場所を追加</button></form><div id="place-list"></div></div><div class="grid"><div><label for="filter-date">表示する日付</label><select id="filter-date"></select></div><div><label for="filter-place">表示する場所</label><select id="filter-place"></select></div></div><div id="timeline-content"></div><h3>シナリオの分岐点</h3><div id="timeline-branches"></div></section>
+</main><footer>© 2026 めっちゃつくーる · キャラシナ</footer><script>
+'use strict';
+const KEY='charashina-v1';
+const blank=()=>({places:[],schedules:[],scenes:[],edges:[],startId:null,characters:[],rules:[],events:[]});
+let db=load();
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY));return valid(d)?{...blank(),...d,places:Array.isArray(d.places)?d.places:[]}:blank()}catch{return blank()}}
+function valid(d){return !!d&&Array.isArray(d.schedules)&&Array.isArray(d.scenes)&&Array.isArray(d.edges)&&d.schedules.length<=10000&&d.scenes.length<=10000&&d.edges.length<=20000&&d.schedules.every(x=>x&&typeof x.id==='string'&&typeof x.npc==='string'&&typeof x.place==='string'&&/^\d\d:\d\d$/.test(x.start)&&/^\d\d:\d\d$/.test(x.end))&&d.scenes.every(x=>x&&typeof x.id==='string'&&typeof x.name==='string'&&typeof x.clue==='string'&&typeof x.req==='string')&&d.edges.every(x=>x&&typeof x.from==='string'&&typeof x.to==='string')&&(d.startId===null||typeof d.startId==='string')&&validExtras(d)}
+function validExtras(d){return ['characters','rules','events'].every(k=>d[k]===undefined||(Array.isArray(d[k])&&d[k].length<=1000&&d[k].every(x=>x&&typeof x.id==='string')))}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(db))}catch{alert('ブラウザへの保存に失敗しました。JSONでバックアップしてください。')}}
+const el=id=>document.getElementById(id);
+function node(tag,text,cls){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(cls)n.className=cls;return n}
+function btn(label,handler,cls=''){const b=node('button',label,cls);b.type='button';b.addEventListener('click',handler);return b}
+function uid(){return globalThis.crypto?.randomUUID?.()||String(Date.now())+'-'+Math.random().toString(36).slice(2)}
+function minutes(t){const [h,m]=t.split(':').map(Number);return h*60+m}
+function show(tab){for(const name of ['schedule','story','rules','data']){el('view-'+name).classList.toggle('hidden',tab!==name);el('tab-'+name).classList.toggle('active',tab===name)}render()}
+for(const name of ['schedule','story','rules','data'])el('tab-'+name).addEventListener('click',()=>show(name));
+el('schedule-form').addEventListener('submit',e=>{e.preventDefault();if(!el('schedule-date').value){alert('日付を選んでください。');return}const npc=el('npc').value.trim(),place=el('place').value.trim(),start=el('start').value,end=el('end').value;if(!npc||!place)return;if(minutes(end)<=minutes(start)){alert('終了時刻は開始時刻より後にしてください。');return}db.schedules.push({id:uid(),npc,place,start,end,action:el('action').value.trim(),date:el('schedule-date').value});save();el('action').value='';render()});
+function renderSchedules(){const list=el('schedule-list'),warnings=el('schedule-warnings');list.replaceChildren();warnings.replaceChildren();const rows=[...db.schedules].filter(x=>matchesFilters(x,'list')).sort((a,b)=>(a.date||'').localeCompare(b.date||'')||a.start.localeCompare(b.start)||a.npc.localeCompare(b.npc));let count=0;for(let i=0;i<rows.length;i++)for(let j=i+1;j<rows.length;j++){const a=rows[i],b=rows[j];if(a.npc===b.npc&&(a.date||'')===(b.date||'')&&minutes(a.start)<minutes(b.end)&&minutes(b.start)<minutes(a.end)){warnings.append(node('div',`⚠ ${a.npc}：${a.start}〜${a.end}（${a.place}）と${b.start}〜${b.end}（${b.place}）が重複しています。`,'notice warn'));count++}}if(!count)warnings.append(node('div','✓ 時間帯が重なる予定は見つかりませんでした。','notice good'));if(!rows.length)list.append(node('p','まだ予定がありません。','muted'));for(const x of rows){const item=node('article',undefined,'item'),head=node('div',undefined,'itemhead'),title=node('strong',`${x.date||'日付未設定'} ${x.start}–${x.end} ｜ ${x.npc} @ ${x.place}`);head.append(title,btn('削除',()=>{db.schedules=db.schedules.filter(y=>y.id!==x.id);save();render()},'danger'));item.append(head);if(x.action)item.append(node('p',x.action));list.append(item)}}
+el('scene-form').addEventListener('submit',e=>{e.preventDefault();const name=el('scene-name').value.trim();if(!name)return;const id=uid();db.scenes.push({id,name,clue:el('scene-clue').value.trim(),req:el('scene-req').value.trim(),memo:el('scene-memo').value.trim(),date:el('scene-date').value,place:el('scene-place').value.trim()});if(!db.startId)db.startId=id;save();el('scene-form').reset();render()});
+el('add-edge').addEventListener('click',()=>{const from=el('edge-from').value,to=el('edge-to').value;if(!from||!to)return;if(from===to){alert('同じシーン同士は接続できません。');return}if(db.edges.some(x=>x.from===from&&x.to===to))return;db.edges.push({from,to});save();render()});
+function renderStory(){const list=el('scene-list'),warnings=el('story-warnings'),from=el('edge-from'),to=el('edge-to');list.replaceChildren();warnings.replaceChildren();const prevFrom=from.value,prevTo=to.value;from.replaceChildren();to.replaceChildren();const map=new Map(db.scenes.map(x=>[x.id,x]));for(const s of db.scenes){for(const select of [from,to]){const opt=node('option',s.name);opt.value=s.id;select.append(opt)}}if(map.has(prevFrom))from.value=prevFrom;if(map.has(prevTo))to.value=prevTo;
+if(!db.scenes.length){warnings.append(node('div','シーンを追加するとチェックを開始します。','notice'));return}
+const reachable=new Set(),queue=[db.startId];while(queue.length){const id=queue.shift();if(!map.has(id)||reachable.has(id))continue;reachable.add(id);for(const e of db.edges)if(e.from===id&&!reachable.has(e.to))queue.push(e.to)}
+const issues=[];for(const s of db.scenes){if(!reachable.has(s.id))issues.push(`「${s.name}」は開始シーンから到達できません。`);if(!db.edges.some(e=>e.from===s.id))issues.push(`「${s.name}」は行き止まりです（結末なら問題ありません）。`)}
+// Each state represents one reachable route and its collected clues; cycles terminate via memoized states.
+const clues=[...new Set(db.scenes.map(x=>x.clue).filter(Boolean))];if(clues.length<=18){const index=new Map(clues.map((x,i)=>[x,i]));const seen=new Set(),q=[[db.startId,0]],missing=new Set();let limit=0;while(q.length&&limit++<120000){const [id,mask]=q.shift(),s=map.get(id);if(!s)continue;const key=id+'|'+mask;if(seen.has(key))continue;seen.add(key);if(s.req&&(!index.has(s.req)||!(mask&(1<<index.get(s.req)))))missing.add(s.name+'|'+s.req);const nextMask=s.clue?mask|(1<<index.get(s.clue)):mask;for(const e of db.edges)if(e.from===id)q.push([e.to,nextMask])}for(const v of missing){const [name,req]=v.split('|');issues.push(`「${name}」へ「${req}」を入手せずに到達できる経路があります。`)}if(limit>=120000)issues.push('分岐が複雑なため一部の経路の検査を省略しました。')}else issues.push('情報の種類が18個を超えたため、情報の取得漏れチェックを省略しました。');
+if(issues.length)for(const msg of issues)warnings.append(node('div','⚠ '+msg,'notice warn'));else warnings.append(node('div','✓ 現在の自動チェックでは問題が見つかりませんでした。','notice good'));
+for(const s of db.scenes){const item=node('article',undefined,'item'),head=node('div',undefined,'itemhead'),title=node('strong',s.name+(s.id===db.startId?' [開始]':'')),controls=node('div',undefined,'actions');controls.style.margin='0';if(s.id!==db.startId)controls.append(btn('開始に設定',()=>{db.startId=s.id;save();render()}));controls.append(btn('削除',()=>{db.scenes=db.scenes.filter(x=>x.id!==s.id);db.edges=db.edges.filter(x=>x.from!==s.id&&x.to!==s.id);if(db.startId===s.id)db.startId=db.scenes[0]?.id||null;save();render()},'danger'));head.append(title,controls);item.append(head);if(s.clue)item.append(node('p','得る情報：'+s.clue));if(s.req)item.append(node('p','必要な情報：'+s.req));if(s.date||s.place)item.append(node('p',`${s.date||'日付未設定'} ｜ ${s.place||'場所未設定'}`));if(s.memo)item.append(node('p',s.memo));const links=node('div',undefined,'links');for(const e of db.edges.filter(x=>x.from===s.id)){links.append(node('span','→ '+(map.get(e.to)?.name||'不明'),'tag'));links.append(btn('×',()=>{db.edges=db.edges.filter(x=>x!==e);save();render()},'danger'))}if(links.childNodes.length)item.append(links);list.append(item)}}
 
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Arcane Tree | 魔法都市育成ゲーム</title>
-  <style>
-    body {
-      background: #101827;
-      color: white;
-      font-family: sans-serif;
-      text-align: center;
-      margin: 0;
-      padding: 40px 15px;
-    }
+function uniquePlaces(){return [...new Set([...db.places,...db.schedules.map(x=>x.place),...db.scenes.map(x=>x.place),...db.events.map(x=>x.place)].filter(Boolean))].sort((a,b)=>a.localeCompare(b,'ja'))}
+function matchesFilters(x,prefix){const date=el(prefix+'-date').value,place=el(prefix+'-place').value;return (!date||date==='*'||(date==='__none__'?!x.date:x.date===date))&&(!place||place==='*'||x.place===place)}
+function updateOptions(select,values,allText){const previous=select.value;select.replaceChildren();const all=node('option',allText);all.value='*';select.append(all);for(const [value,label] of values){const opt=node('option',label);opt.value=value;select.append(opt)}select.value=[...select.options].some(x=>x.value===previous)?previous:'*'}
+function renderPlaceControls(){
+ const places=uniquePlaces(),existing=el('place').value;
+ el('place').replaceChildren();for(const p of places){const o=node('option',p);o.value=p;el('place').append(o)}
+ if(places.includes(existing))el('place').value=existing;
+ const dl=el('known-places');dl.replaceChildren();for(const p of places){const o=node('option');o.value=p;dl.append(o)}
+ const list=el('place-list');list.replaceChildren();if(!places.length)list.append(node('p','まず場所を追加してください。','muted'));
+ for(const p of places){const line=node('div',undefined,'place-pill');line.append(node('span',p));if(db.places.includes(p))line.append(btn('削除',()=>{if(db.schedules.some(x=>x.place===p)||db.events.some(x=>x.place===p)||db.scenes.some(x=>x.place===p)){alert('この場所を使っている予定・イベントがあります。先にそれらの場所を変更してください。');return}db.places=db.places.filter(x=>x!==p);save();render()},'danger'));list.append(line)}
+ const dates=[...new Set([...db.schedules,...db.events,...db.scenes].map(x=>x.date||'__none__'))].sort(),dateValues=dates.map(x=>[x,x==='__none__'?'日付未設定':x]),placeValues=places.map(x=>[x,x]);
+ for(const prefix of ['filter','list']){updateOptions(el(prefix+'-date'),dateValues,'すべての日付');updateOptions(el(prefix+'-place'),placeValues,'すべての場所')}
+}
+el('place-form').addEventListener('submit',e=>{e.preventDefault();const name=el('new-place').value.trim();if(!name)return;if(uniquePlaces().includes(name)){alert('すでに登録されています。');return}db.places.push(name);el('new-place').value='';save();render();el('place').value=name});
+el('schedule-date').value=new Date().toLocaleDateString('sv-SE');
+for(const prefix of ['filter','list'])for(const field of ['date','place'])el(prefix+'-'+field).addEventListener('change',()=>{if(prefix==='list'){renderSchedules();addEditControls()}else renderTimeline()});
 
-    h1 {
-      color: #c5a8ff;
-    }
+function render(){renderPlaceControls();renderSchedules();renderStory();renderRules();addEditControls();renderTimeline()}
 
-    #mana {
-      font-size: 32px;
-      color: #8de9ff;
-      font-weight: bold;
-    }
+// Original, deterministic rule engine: comparisons use structured fields, not natural-language AI.
+function overlapsClock(a,b,start,end){const m=minutes;const spans=(x,y)=>m(x)<m(y)?[[m(x),m(y)]]:[[m(x),1440],[0,m(y)]];return spans(a,b).some(([x,y])=>spans(start,end).some(([u,v])=>x<v&&u<y))}
+function ruleIssues(event,character){const issues=[];for(const r of db.rules){if(r.type==='age'&&r.action===event.action&&character.age<Number(r.value))issues.push(`${r.title}：${character.name}は${character.age}歳（必要：${r.value}歳以上）`);if(r.type==='element'&&r.action===event.action&&character.element===r.value)issues.push(`${r.title}：属性「${r.value}」では「${event.action}」は禁止`);if(r.type==='place'&&event.place===r.value&&event.time&&overlapsClock(event.time,clockAfter(event.time),r.start,r.end))issues.push(`${r.title}：${event.time}の「${r.value}」への立ち入りは禁止`)}return issues}
+function clockAfter(t){const n=(minutes(t)+1)%1440;return String(Math.floor(n/60)).padStart(2,'0')+':'+String(n%60).padStart(2,'0')}
+el('character-form').addEventListener('submit',e=>{e.preventDefault();const name=el('character-name').value.trim(),age=Number(el('character-age').value);if(!name||!Number.isInteger(age)||age<0||age>999)return;if(db.characters.some(c=>c.name===name)){alert('同名のキャラクターは登録できません。');return}db.characters.push({id:uid(),name,age,element:el('character-element').value.trim(),note:el('character-note').value.trim()});save();el('character-form').reset();render()});
+el('rule-form').addEventListener('submit',e=>{e.preventDefault();const type=el('rule-type').value,title=el('rule-title').value.trim(),action=el('rule-action').value.trim(),value=el('rule-value').value.trim(),start=el('rule-start').value,end=el('rule-end').value;if(!title||!value)return;if(type!=='place'&&!action){alert('対象の行動を入力してください。');return}if(type==='age'&&(!/^\d+$/.test(value)||Number(value)>999)){alert('最低年齢は0〜999の整数で入力してください。');return}if(type==='place'&&start===end){alert('禁止時間の開始と終了を別にしてください。');return}db.rules.push({id:uid(),type,title,action,value,start,end});save();el('rule-form').reset();render()});
+el('event-form').addEventListener('submit',e=>{e.preventDefault();const characterId=el('event-character').value,action=el('event-action').value.trim();if(!db.characters.some(c=>c.id===characterId)||!action)return;db.events.push({id:uid(),characterId,action,place:el('event-place').value.trim(),time:el('event-time').value,date:el('event-date').value,exception:el('event-exception').checked});save();el('event-form').reset();render()});
+function renderRules(){const characters=el('character-list'),rules=el('rule-list'),events=el('event-list'),warnings=el('rule-warnings'),selector=el('event-character');for(const target of [characters,rules,events,warnings])target.replaceChildren();const old=selector.value;selector.replaceChildren();for(const c of db.characters){const o=node('option',c.name);o.value=c.id;selector.append(o);const item=node('div',undefined,'item');item.append(node('strong',`${c.name} ｜ ${c.age}歳 ｜ 属性：${c.element||'未設定'}`),btn('削除',()=>{if(!confirm('このキャラクターと関連イベントを削除しますか？'))return;db.characters=db.characters.filter(x=>x.id!==c.id);db.events=db.events.filter(x=>x.characterId!==c.id);save();render()},'danger'));if(c.note)item.append(node('p',c.note));characters.append(item)}if(db.characters.some(c=>c.id===old))selector.value=old;if(!db.characters.length)characters.append(node('p','キャラクターを登録してください。','muted'));
+for(const r of db.rules){const detail=r.type==='age'?`「${r.action}」は${r.value}歳以上`:r.type==='element'?`属性「${r.value}」は「${r.action}」禁止`:`「${r.value}」は${r.start}〜${r.end}立ち入り禁止`;const item=node('div',undefined,'item');item.append(node('strong',r.title),node('p',detail),btn('削除',()=>{db.rules=db.rules.filter(x=>x.id!==r.id);save();render()},'danger'));rules.append(item)}if(!db.rules.length)rules.append(node('p','ルールを登録してください。','muted'));
+let count=0;for(const ev of db.events){const c=db.characters.find(x=>x.id===ev.characterId);if(!c)continue;const problems=ruleIssues(ev,c);const item=node('div',undefined,'item');item.append(node('strong',`${c.name}：${ev.action}${ev.place?' @ '+ev.place:''}${ev.time?' ('+ev.time+')':''}`),btn('削除',()=>{db.events=db.events.filter(x=>x.id!==ev.id);save();render()},'danger'));if(ev.exception)item.append(node('p','例外として許可済み','muted'));else for(const issue of problems){item.append(node('p','⚠ '+issue,'notice warn'));count++}events.append(item)}
+// Cross-check NPC schedules against time-and-place restrictions.
+for(const schedule of db.schedules){for(const r of db.rules.filter(x=>x.type==='place'&&x.value===schedule.place)){if(overlapsClock(schedule.start,schedule.end,r.start,r.end)){warnings.append(node('div',`⚠ NPC予定表：${schedule.npc}の${schedule.start}〜${schedule.end}「${schedule.place}」は「${r.title}」に抵触する可能性があります。`,'notice warn'));count++}}}
+if(!count)warnings.append(node('div','✓ 登録済みの構造化ルールに対する違反候補は見つかりませんでした。','notice good'));if(!db.events.length)events.append(node('p','イベントを登録すると、ルールを自動判定します。','muted'))}
 
-    #tree {
-      font-size: 120px;
-      cursor: pointer;
-      user-select: none;
-      transition: transform 0.1s;
-      display: inline-block;
-      margin: 20px;
-    }
 
-    #tree:active {
-      transform: scale(0.9);
-    }
+const editState={schedule:null,scene:null,character:null,rule:null,event:null};
+const editSpec={
+ schedule:{form:'schedule-form',items:'schedule-list',array:'schedules',fields:{npc:'npc',place:'place',start:'start',end:'end',action:'action',date:'schedule-date'}},
+ scene:{form:'scene-form',items:'scene-list',array:'scenes',fields:{name:'scene-name',clue:'scene-clue',req:'scene-req',memo:'scene-memo',date:'scene-date',place:'scene-place'}},
+ character:{form:'character-form',items:'character-list',array:'characters',fields:{name:'character-name',age:'character-age',element:'character-element',note:'character-note'}},
+ rule:{form:'rule-form',items:'rule-list',array:'rules',fields:{title:'rule-title',type:'rule-type',action:'rule-action',value:'rule-value',start:'rule-start',end:'rule-end'}},
+ event:{form:'event-form',items:'event-list',array:'events',fields:{characterId:'event-character',action:'event-action',place:'event-place',time:'event-time',date:'event-date',exception:'event-exception'}}
+};
+function cancelEdit(kind){editState[kind]=null;const spec=editSpec[kind],form=el(spec.form);form.reset();form.classList.remove('editing');form.querySelector('[type=submit]').textContent=({schedule:'予定',scene:'シーン',character:'キャラクター',rule:'ルール',event:'イベント'})[kind]+'を追加';const c=el('cancel-'+kind);if(c)c.remove()}
+function beginEdit(kind,id){const spec=editSpec[kind],record=db[spec.array].find(x=>x.id===id);if(!record)return;editState[kind]=id;const form=el(spec.form);for(const [field,inputId] of Object.entries(spec.fields)){const input=el(inputId);if(input.type==='checkbox')input.checked=!!record[field];else input.value=record[field]??''}form.classList.add('editing');form.querySelector('[type=submit]').textContent='変更を保存';if(!el('cancel-'+kind)){const b=btn('編集をキャンセル',()=>cancelEdit(kind));b.id='cancel-'+kind;form.querySelector('.actions').append(b)}form.scrollIntoView({behavior:'smooth',block:'start'});el(Object.values(spec.fields)[0]).focus()}
+function addEditControls(){for(const [kind,spec] of Object.entries(editSpec)){const container=el(spec.items),records=db[spec.array];const items=[...container.children].filter(x=>x.classList.contains('item'));const ordered=kind==='schedule'?[...records].filter(x=>matchesFilters(x,'list')).sort((a,b)=>(a.date||'').localeCompare(b.date||'')||a.start.localeCompare(b.start)||a.npc.localeCompare(b.npc)):records;items.forEach((item,i)=>{if(!ordered[i])return;const target=item.querySelector('.itemhead .actions')||item.querySelector('.itemhead')||item;const b=btn('編集',()=>beginEdit(kind,ordered[i].id));target.insertBefore(b,target.querySelector('button')||null)})}}
+function captureEdit(kind,e){const id=editState[kind];if(!id)return false;e.preventDefault();e.stopImmediatePropagation();const spec=editSpec[kind],record=db[spec.array].find(x=>x.id===id);if(!record){cancelEdit(kind);return true}const next={...record};for(const [field,inputId] of Object.entries(spec.fields)){const input=el(inputId);next[field]=input.type==='checkbox'?input.checked:input.value.trim()}
+if(kind==='schedule'&&(!next.npc||!next.place||!next.date||minutes(next.end)<=minutes(next.start))){alert('名前・場所・正しい時間を入力してください。');return true}
+if(kind==='character'){next.age=Number(next.age);if(!next.name||!Number.isInteger(next.age)||next.age<0||next.age>999||db.characters.some(x=>x.id!==id&&x.name===next.name)){alert('名前の重複または年齢の入力を確認してください。');return true}}
+if(kind==='rule'){if(!next.title||!next.value||(next.type!=='place'&&!next.action)||(next.type==='age'&&(!/^\d+$/.test(next.value)||Number(next.value)>999))||(next.type==='place'&&next.start===next.end)){alert('ルールの条件を確認してください。');return true}}
+if(kind==='event'&&(!next.action||!db.characters.some(x=>x.id===next.characterId))){alert('キャラクターと行動を指定してください。');return true}
+if(kind==='scene'&&!next.name){alert('シーン名を入力してください。');return true}
+Object.assign(record,next);cancelEdit(kind);save();render();return true}
+for(const [kind,spec] of Object.entries(editSpec))el(spec.form).addEventListener('submit',e=>captureEdit(kind,e),true);
+function scheduleProblems(x){let bad=false;for(const other of db.schedules){if(other.id!==x.id&&other.npc===x.npc&&(other.date||'')===(x.date||'')&&minutes(x.start)<minutes(other.end)&&minutes(other.start)<minutes(x.end))bad=true}for(const r of db.rules){if(r.type==='place'&&r.value===x.place&&overlapsClock(x.start,x.end,r.start,r.end))bad=true}return bad}
+function renderTimeline(){const host=el('timeline-content'),branches=el('timeline-branches');host.replaceChildren();branches.replaceChildren();const times=node('div',undefined,'time-labels');for(let h=0;h<=24;h+=3)times.append(node('span',String(h).padStart(2,'0')+':00'));host.append(times);
+const track=node('div',undefined,'timeline-track'),rows=[...db.schedules].filter(x=>matchesFilters(x,'filter')).sort((a,b)=>a.npc.localeCompare(b.npc)||a.start.localeCompare(b.start));const height=Math.max(76,rows.length*32+12);track.style.height=height+'px';rows.forEach((x,i)=>{const bar=node('button',`${x.npc}：${x.action||x.place}`, 'timebar'+(scheduleProblems(x)?' problem':''));bar.type='button';bar.style.left=(minutes(x.start)/1440*100)+'%';bar.style.width=Math.max((minutes(x.end)-minutes(x.start))/1440*100,1.4)+'%';bar.style.top=(8+i*32)+'px';bar.title=`${x.start}〜${x.end} ${x.npc} / ${x.place}（クリックで編集）`;bar.addEventListener('click',()=>{show('schedule');beginEdit('schedule',x.id)});track.append(bar)});
+for(const ev of db.events){if(!ev.time||!matchesFilters(ev,'filter'))continue;const c=db.characters.find(x=>x.id===ev.characterId);const marker=node('div',undefined,'timemark');marker.style.left=(minutes(ev.time)/1440*100)+'%';marker.title=`${ev.time} ${c?.name||'不明'}：${ev.action}`;track.append(marker)}
+host.append(node('div',undefined,'timeline-scroll'));host.lastChild.append(track);
+const eventList=node('div');for(const ev of db.events.filter(x=>x.time&&matchesFilters(x,'filter'))){const c=db.characters.find(x=>x.id===ev.characterId);const issues=c&&!ev.exception?ruleIssues(ev,c):[];const item=node('div',`${ev.date||'日付未設定'} ${ev.time} ${c?.name||'不明'}：${ev.action}${ev.place?' @ '+ev.place:''}${issues.length?' ⚠ '+issues.join(' / '):''}`,'branch-card'+(issues.length?' problem':''));item.append(btn('イベントを編集',()=>{show('rules');beginEdit('event',ev.id)}));eventList.append(item)}if(eventList.childNodes.length){host.append(node('h3','イベント一覧'));host.append(eventList)}
+if(!rows.length&&!db.events.some(x=>x.time&&matchesFilters(x,'filter')))host.append(node('p','予定や時刻付きイベントを登録すると、ここに表示されます。','muted'));
+const map=new Map(db.scenes.map(x=>[x.id,x]));if(!db.scenes.length){branches.append(node('p','シーンを登録すると分岐点を表示します。','muted'));return}
+for(const scene of db.scenes.filter(x=>matchesFilters(x,'filter'))){const outgoing=db.edges.filter(x=>x.from===scene.id),incoming=db.edges.filter(x=>x.to===scene.id),reachable=new Set(),queue=[db.startId];while(queue.length){const id=queue.shift();if(reachable.has(id))continue;reachable.add(id);for(const edge of db.edges)if(edge.from===id)queue.push(edge.to)}
+const problem=!reachable.has(scene.id)||!outgoing.length;const div=node('div',undefined,'branch-card'+(problem?' problem':''));div.append(node('strong',`${scene.id===db.startId?'▶ 開始：':''}${scene.name}（${scene.date||'日付未設定'} / ${scene.place||'場所未設定'}）`));const next=outgoing.map(x=>map.get(x.to)?.name||'不明');div.append(node('div',next.length?`→ ${next.join(' ／ ')}`:'→ 接続先なし（結末なら正常）','smallnote'));if(outgoing.length>1)div.append(node('div',`◆ 分岐点：${outgoing.length}方向`,'smallnote'));if(incoming.length>1)div.append(node('div',`◆ 合流点：${incoming.length}経路`,'smallnote'));if(!reachable.has(scene.id))div.append(node('div','⚠ 開始シーンから到達できません','smallnote'));div.append(btn('シーンを編集',()=>{show('story');beginEdit('scene',scene.id)}));branches.append(div)}
+}
 
-    button {
-      background: #7252b5;
-      color: white;
-      border: none;
-      padding: 15px 25px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-  </style>
-</head>
-<body>
-  <h1>Arcane Tree</h1>
-  <p>魔法の大樹を育て、都市を発展させよう！</p>
-
-  <p>現在のマナ</p>
-  <div id="mana">0</div>
-
-  <div id="tree" role="button" tabindex="0"
-       aria-label="魔法の大樹">🌳</div>
-
-  <p>大樹をクリックしてマナを集めよう！</p>
-
-  <h2>施設建設</h2>
-  <button id="buy">魔力の苗木を建設（15マナ）</button>
-
-  <p>苗木の数：<span id="count">0</span></p>
-  <p>自動生産：<span id="rate">0</span> マナ/秒</p>
-
-  <script>
-    let mana = 0;
-    let seedlings = 0;
-
-    const manaEl = document.getElementById("mana");
-    const countEl = document.getElementById("count");
-    const rateEl = document.getElementById("rate");
-    const buyButton = document.getElementById("buy");
-    const tree = document.getElementById("tree");
-
-    function update() {
-      manaEl.textContent = Math.floor(mana);
-      countEl.textContent = seedlings;
-      rateEl.textContent = (seedlings * 0.2).toFixed(1);
-      buyButton.disabled = mana < 15;
-    }
-
-    function clickTree() {
-      mana += 1;
-      update();
-    }
-
-    tree.addEventListener("click", clickTree);
-    tree.addEventListener("keydown", function(event) {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        clickTree();
-      }
-    });
-
-    buyButton.addEventListener("click", function() {
-      if (mana >= 15) {
-        mana -= 15;
-        seedlings++;
-        update();
-      }
-    });
-
-    setInterval(function() {
-      mana += seedlings * 0.2 / 10;
-      update();
-    }, 100);
-
-    update();
-  </script>
-</body>
-</html>
-  
+el('export').addEventListener('click',()=>{const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='charashina-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)});
+el('import').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{if(file.size>2000000)throw Error('ファイルが大きすぎます（2MB以下）。');const parsed=JSON.parse(await file.text());if(!valid(parsed))throw Error('キャラシナ形式のデータではありません。');if(!confirm('現在のデータを置き換えます。よろしいですか？'))return;db={...blank(),...parsed};save();render();el('data-status').textContent='読み込みが完了しました。'}catch(err){el('data-status').textContent='読み込み失敗：'+err.message}finally{e.target.value=''}});
+el('reset').addEventListener('click',()=>{if(!confirm('すべての予定・シーン・設定・ルールを削除します。元に戻せません。よろしいですか？'))return;db=blank();save();render();el('data-status').textContent='すべて削除しました。'});render();
+</script></body></html>
